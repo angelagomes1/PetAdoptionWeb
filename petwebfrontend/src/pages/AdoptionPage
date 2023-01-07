@@ -1,0 +1,85 @@
+import styled from "styled-components"
+import Navbar from "../components/NavBar"
+import Announcement from "../components/Announcement"
+import Pet from "../components/Pet"
+import Newsletter from "../components/Newsletter"
+import Footer from "../components/Footer"
+import { mobile } from "../responsive"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+const  Container =styled.div`
+    
+`;
+const  Title =styled.h1`
+    margin: 20px;
+`;
+const  FilterContainer =styled.div`
+    display: flex;
+    justify-content: space-between;
+
+`;
+const  Filter =styled.div`
+    margin: 20px;
+    ${mobile({width:"0px 24px", display:"flex", flexDirection:"column"})}
+`;
+const FilterText =styled.span`
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 20px;
+  ${mobile({marginRight:"0px"})}
+`;
+const Select = styled.select`
+  padding: 10px;
+  margin-right: 20px;
+  ${mobile({margin:"10px 0px"})}
+`;
+const Option = styled.option`
+    
+`;
+
+const AdoptionPage = () => {
+  const navigate = useNavigate();
+ // const cat =  navigate.pathname.split("/")[2];
+  const [filter,setFilters]= useState({});
+  const [state,setState]= useState("Delhi");
+
+  const handleFilters = (e) =>{
+    const value = e.target.value;
+    setFilters({
+      ...filter,
+      [e.target.value]:value,
+    })
+  }
+  console.log(filter)
+  return (
+    <Container>
+    <Navbar/>
+        <Announcement/>
+        <Title>Adoption</Title>
+        <FilterContainer>
+          <Filter><FilterText>Filter:</FilterText>
+          <Select name="type" onChange={handleFilters}>
+            <Option disabled >
+              PET'S TYPE
+            </Option>
+            <Option>Dogs and Puppies</Option>
+            <Option>Cats and Kittens</Option> 
+          </Select>
+          </Filter>
+          <Filter>
+          <FilterText>SEARCH BY STATE</FilterText>
+          <Select name="state" onChange={handleFilters}>
+          <Option disabled >MAHARASTRA</Option>
+            <Option>MAHARASTRA</Option>
+            <Option>NEW DELHI</Option> 
+          </Select>
+          </Filter>
+        </FilterContainer>
+        <Pet/>
+        <Newsletter/>
+        <Footer/>
+    </Container>
+  )
+}
+
+export default AdoptionPage
