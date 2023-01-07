@@ -1,0 +1,90 @@
+const Adoption = require("../models/Adoption");
+const { verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin } = require("./verifyToken");
+
+const router = require("express").Router();
+//Create
+// router.post("/",verifyToken,async(req,res)=>{
+//     const newAdoption = new Adoption(req.body)
+//     try{
+//      const savedAdoption= await newAdoption.save();
+//      res.status(200).json(savedAdoption);
+//     }catch(err){
+//         res.status(500).json(err)
+//     }
+// })
+router.post("/adoption",async (req, res)=>{
+
+    console.log("req --->", req.body);
+    const newAdoption = new Adoption({
+        name:req.body.name,
+        type:req.body.type,
+        age:req.body.age
+        // breed:{type:String, required:true,},
+        // img: {type:String, required:true },
+        // vaccinated: {type:Boolean},
+        // petId: {type:Number },
+        // address:,
+        // number:{type:Number, required:true},
+    });
+    try{
+    const savedAdoption= await newAdoption.save();
+    res.status(200).json(savedAdoption)
+    }catch(err){
+        res.status(500).json(err);
+    }
+});
+//Update
+router.put("/:id",verifyTokenAndAdmin,async (req,res)=>{
+    
+    try{
+        const updatedAdoption = await Adoption.findByIdAndUpdate(req.params.id, {
+            $set: req.body,
+        },{new:true});
+        res.status(200).json(updatedAdoption);
+    }
+    catch(err){
+        res.status(500).json(err);
+    }
+});
+
+//Delete
+router.delete("/:id", verifyTokenAndAdmin, async(req,res)=>{
+    try{
+    await Adoption.findByIdAndDelete(req.params.id)
+    res.status(200).json("Product has been deleted...")
+    }catch(err){
+        res.status(500).json(err)
+    }
+});
+//Get Adoption
+router.get("/find/:id", async(req,res)=>{
+    try{
+    const adoption= await Adoption.findById(req.params.id)
+        res.status(200).json(adoption);
+    }catch(err){
+        res.status(500).json(err)
+    }
+});
+//Get All adption
+router.get("/", async(req,res)=>{
+    const qNew=req.query.new;
+    const qCategory=req.query.category;
+
+    try{
+        let adoption;
+        if(qNew){
+            adoption= await Adoption.find().sort({createdAt: -1}).limits(1)
+        }else if(qCategory){
+            adoption = await Adoption.find({categories:{
+                $in:[qCategory],
+            },});
+        }else{
+            adoption= await Adoption.find();
+        }
+        res.status(200).json(adoption);
+    }catch(err){
+        res.status(500).json(err)
+    }
+});
+
+module.exports =router;
